@@ -1,10 +1,12 @@
 package com.sea.goals
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.appcompat.widget.Toolbar
@@ -20,8 +22,9 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
-class MainActivity : AppCompatActivity(),
+class RecommendationActivity : AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener,
     CardRecAdapter.CardDialogListner{
     private lateinit var drawer: DrawerLayout
@@ -32,8 +35,8 @@ class MainActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        db = AppDatabase.getDatabase(this)
         setContentView(R.layout.activity_main)
-
         //Set ActionBar, Enable toggle Navigation Drawer, Add Navigation Listener
         setSupportActionBar(toolbar as Toolbar?)
         (toolbar as Toolbar?)?.title = "Vorschläge"
@@ -50,12 +53,32 @@ class MainActivity : AppCompatActivity(),
         cardLayoutManager = LinearLayoutManager(this)
 
         //Setup Database
-        db = AppDatabase.getDatabase(this)
+        CoroutineScope(IO).launch {
+            setCards()
+        }
+
+        //Zu meiem Tag Listner
+        toTodayBar.setOnClickListener{
+            intent = Intent(this, TodayActivity::class.java)
+            startActivity(intent)
+        }
+        //ZU Aktivität erstellen
+        emptyListButton.setOnClickListener {
+            intent = Intent(this, CreateGoalActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
         CoroutineScope(IO).launch {
             setCards()
         }
     }
 
+    /**
+     * Falls das Menu offen ist, wird es geschlossen
+     */
     @Override
     override fun onBackPressed() {
         if(drawer.isDrawerOpen(GravityCompat.START)) {
@@ -65,6 +88,9 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    /**
+     * Navigation Handlers
+     */
     @Override
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         var intent: Intent
@@ -86,16 +112,26 @@ class MainActivity : AppCompatActivity(),
     }
 
     /**
-     * Füllt die Seite mit Karten-Views
+     * Holt sich alles alle Goals die nicht schon für heute ausgewählt (-> today = 0)sind
+     * und gibt diese anschließend aus.
+     * Falls die Liste leer ist, wird ein Hilfstext eingeblendet
      */
     private suspend fun setCards() {
         val dailyGoals: List<Goal> = db.dailyGoals().getAllRecs()
         val weeklyGoals: List<Goal> = db.weeklyGoals().getAllRecs()
-        val list: List<Goal> = weeklyGoals.plus(dailyGoals)
+        val challengeGoals: List<Goal> = db.challengeGoals().getAllRecs()
+        val list: List<Goal> = weeklyGoals.plus(dailyGoals).plus(challengeGoals)
+        val priorityComparator = Comparator{goal1: Goal, goal2: Goal -> goal2.getPriority() - goal1.getPriority()}
+        val sortedList = list.sortedWith(priorityComparator)
 
         CoroutineScope(Main).launch {
+            if(sortedList.isEmpty()) {
+                emptyListLayout.visibility = View.VISIBLE
+            } else {
+                emptyListLayout.visibility = View.GONE
+            }
             //Set RecyclerView
-            cardAdapter = CardRecAdapter(list)
+            cardAdapter = CardRecAdapter(sortedList)
             cardRecyclerView.layoutManager = cardLayoutManager
             cardRecyclerView.adapter = cardAdapter
         }
@@ -104,15 +140,18 @@ class MainActivity : AppCompatActivity(),
 
     /**
      * Wird aufgerufen, nach Bestätigung, dass man eine Aktivität machen will
+     * Setzt den Wert today auf 1 ->
      */
     override fun onAcceptedActivity(type: Int, id: Int) {
-        Log.i("test","right place: type: $type id: $id")
         CoroutineScope(IO).launch {
             when(type) {
                 1 -> db.dailyGoals().setToday(id, 1)
                 2 -> db.weeklyGoals().setToday(id, 1)
+                3 -> db.challengeGoals().setToday(id, 1)
             }
+            //Cards werden aktualisiert
             setCards()
         }
+        toTodayBar.visibility = View.VISIBLE
     }
 }

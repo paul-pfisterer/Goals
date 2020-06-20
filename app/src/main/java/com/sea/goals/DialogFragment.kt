@@ -10,11 +10,19 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 
+/**
+ * Interface das vom Listner (TodayActivity) implementiert werden muss um auf Events im Dialog
+ * reagiern zu können
+ */
 interface DialogFragmentListener {
     fun onDoneConfirmSpecific(goal: Goal, progress: Double)
     fun onDoneConfirm(goal: Goal)
 }
 
+/**
+ * Dialog für Weekly und Daily Aktivitäten ohne spezifisches Ziel
+ * Einfaches Confirmen
+ */
 class DoneDialogFragment(private val currentCard: Goal): DialogFragment() {
     lateinit var listener: DialogFragmentListener
 
@@ -42,6 +50,11 @@ class DoneDialogFragment(private val currentCard: Goal): DialogFragment() {
     }
 }
 
+/**
+ * Dialog für Weekly und Daily Aktivitäten mit spezifisches Ziel oder Aktivitäten
+ * vom Typ Challenge
+ * Confirmen mit einem bestimmten Progress der weitergegeben wird
+ */
 class DoneSpecificDialogFragment(val currentCard: Goal): DialogFragment() {
     lateinit var listener: DialogFragmentListener
 
@@ -57,7 +70,12 @@ class DoneSpecificDialogFragment(val currentCard: Goal): DialogFragment() {
         val rootView = inflater.inflate(R.layout.done_specific_dialog, container, false)
         rootView.findViewById<TextView>(R.id.dialog_specific_title).text = currentCard.name
         val progressView = rootView.findViewById<TextView>(R.id.dialog_specific_progress)
-        progressView.text = currentCard.goal.toString()
+        //TODO unschöner Patch für Challenge Goals
+        if(currentCard.type == 3) {
+            progressView.text = 0.toString()
+        } else {
+            progressView.text = currentCard.goal.toString()
+        }
         rootView.findViewById<TextView>(R.id.dialog_specific_unit).text = currentCard.unit
         rootView.findViewById<Button>(R.id.confirm_done_specific).setOnClickListener {
             val progress = progressView.text.toString().toDouble()

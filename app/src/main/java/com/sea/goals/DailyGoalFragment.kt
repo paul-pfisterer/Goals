@@ -21,23 +21,28 @@ class DailyGoalFragment : Fragment() {
     lateinit var value: TextView
     lateinit var listener: FragmentDailyGoalListener
 
+    /**
+     * Interface dass vom Listner, also von Create Activity implementiert werden muss
+     */
     interface FragmentDailyGoalListener {
         fun onSubmitDailyGoalSend(value: String, unit: String);
-        fun onChangeFrag(forward: Boolean, fragment: Int)
+        fun onChangeFrag(forward: Boolean, index: Int)
     }
 
     /**
-     * Läuft wenn das Fragment erstellt wird.
+     * Beim Erstellen des Fragments, wird eine View gewählt und Felder gefüllt
      */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_create_daily, container, false)
+        //Speichern von Views in Veriablen
         navBack = view.arrow_backward
         navFor = view.arrow_forward
         value = view.createValue
         unit = view.createUnit
         submitButton = view.createButton
+        //Events für bestimmte Views
         submitButton.setOnClickListener {
             var value = value.text.toString()
             var unit = unit.text.toString()
@@ -52,6 +57,9 @@ class DailyGoalFragment : Fragment() {
         return view
     }
 
+    /**
+     * Listner wird gesetzt, hier CreateGoalActivity
+     */
     override fun onAttach(context: Context) {
         super.onAttach(context)
         //TODO check if activity implements FragmentDailyGoalListner
@@ -60,7 +68,7 @@ class DailyGoalFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-        //TODO set listner to null
+        //TODO Listener auf null setzen
     }
 
 }

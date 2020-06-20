@@ -3,7 +3,6 @@ package com.sea.goals
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
@@ -43,8 +42,8 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
                 data += "${it.name}/${it.id} --> Mo: ${it.monday}, Di: ${it.tuesday}, Mi: ${it.wednesday}, DO: ${it.thursday}," +
                         "Fr: ${it.friday}, Sa: ${it.saturday}, So: ${it.sunday} " +
                         "today: ${it.today} \n" +
-                        "priority: ${it.priority} " +
-                        "perseverance: ${it.perseverance}" +
+                        "priority: ${it.getPriority()} " +
+                        "perseverance: ${it.getPeserverance()}" +
                         "\n\n"
             }
             val weeklyGoals: List<Weekly> = db.weeklyGoals().getAll()
@@ -52,7 +51,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
                 data += "${it.name}/${it.id} --> Mo: ${it.monday}, Di: ${it.tuesday}, Mi: ${it.wednesday}, DO: ${it.thursday}," +
                         "Fr: ${it.friday}, Sa: ${it.saturday}, So: ${it.sunday} " +
                         "today: ${it.today} \n" +
-                        "priority: ${it.priority}" +
+                        "priority: ${it.getPriority()}" +
                         "\n\n"
             }
             val progress: List<Progress> = db.progress().getAll()
@@ -84,7 +83,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         val intent: Intent
         when(item.itemId) {
             R.id.recs -> {
-                intent = Intent(this, MainActivity::class.java)
+                intent = Intent(this, RecommendationActivity::class.java)
                 startActivity(intent)
             }
             R.id.createGoal -> {

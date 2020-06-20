@@ -12,15 +12,20 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 class CardRecAdapter(private val list: List<Goal>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var TYPE_DAILY: Int= 1
     private var TYPE_WEEKLY: Int= 2
+    private var TYPE_CHALLENGE: Int= 3
     private lateinit var parentView: ViewGroup
 
     /**
-     * Um in der Main Klasse
+     * Function um auf Card-Button click zu reagieren, Mein Activity implementiert das Interface
+     * und kann so die Methode aufrufen
      */
     interface CardDialogListner {
         fun onAcceptedActivity(type: Int, id: Int)
     }
 
+    /**
+     * Wählt je nach Typ der Aktivität das richtige Layout aus
+     */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         parentView = parent
         return when (viewType) {
@@ -32,6 +37,10 @@ class CardRecAdapter(private val list: List<Goal>): RecyclerView.Adapter<Recycle
                 val v = LayoutInflater.from(parent.context).inflate(R.layout.card_rec_weekly, parent, false)
                 WeeklyViewHolder(v)
             }
+            TYPE_CHALLENGE -> {
+                val v = LayoutInflater.from(parent.context).inflate(R.layout.card_rec_challenge, parent, false)
+                ChallengeViewHolder(v)
+            }
             else -> {
                 val v = LayoutInflater.from(parent.context).inflate(R.layout.card_rec_daily, parent, false)
                 DailyViewHolder(v)
@@ -39,22 +48,31 @@ class CardRecAdapter(private val list: List<Goal>): RecyclerView.Adapter<Recycle
         }
     }
 
+    /**
+     * Füllt die im ViewHolder enthaltenen Views (also die Views der einzelnen Cards) mit Inhalt
+     * Für die verschieden Typen wird verschiedener Inhalt befüllt
+     * Die views die man hier bearbeiten kann werden im ViewHolder festgelegt
+     */
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        //TODO schöner schreiben, nur provisorisch
         when (getItemViewType(position)) {
             TYPE_DAILY -> {
+                //TODO Text durch Graphic ersetzten
                 val currentCard: Daily= list[position] as Daily
                 val dailyHolder = holder as DailyViewHolder
-                dailyHolder.titleView.text = currentCard.name
-                if(currentCard.specificGoal == 1) {
-                    dailyHolder.goalView.text = currentCard.goal.toString() + currentCard.unit + "/Tag"
+
+                val consequenceText  = "Konsequenz: " + currentCard.getPeserverance().toString() +
+                        "\n" + "Priorität: " + currentCard.getPriority().toString()
+                val specificGoalText = if(currentCard.specificGoal == 1) {
+                    "${currentCard.goal}${currentCard.unit} /Tag"
                 } else {
-                    dailyHolder.goalView.text = "kein Tagesziel"
+                    "kein Tagesziel"
                 }
-                dailyHolder.consequenceView.text = "Konsequenz: " + currentCard.perseverance.toString() +
-                        "\n" + "Priorität: " + currentCard.priority.toString()
+
+                dailyHolder.titleView.text = currentCard.name
+                dailyHolder.goalView.text = specificGoalText
+                dailyHolder.consequenceView.text = consequenceText
                 dailyHolder.buttonView.setOnClickListener {
-                    Log.i("test", "card with id:${currentCard.id} and type:${currentCard.type}")
+                    //Dialog aufmachen und Click-Listner hinzufügen
                     MaterialAlertDialogBuilder(parentView.context)
                         .setTitle(currentCard.name)
                         .setNegativeButton("Abbrechen") { dialog, which ->
@@ -66,18 +84,47 @@ class CardRecAdapter(private val list: List<Goal>): RecyclerView.Adapter<Recycle
                 }
             }
             TYPE_WEEKLY -> {
+                //TODO Text durch Graphic ersetzten
                 val currentCard: Weekly = list[position] as Weekly
                 val weeklyHolder = holder as WeeklyViewHolder
-                weeklyHolder.titleView.text = currentCard.name
-                if(currentCard.specificGoal == 1) {
-                    weeklyHolder.goalView.text = currentCard.goal.toString() + currentCard.unit + "/Session"
+
+                val progressText = "Progress: " + currentCard.getProgress().toString() +
+                        "\n" + "Priorität: " + currentCard.getPriority().toString()
+                val specificGoalText = if(currentCard.specificGoal == 1) {
+                    "${currentCard.goal.toString()}${currentCard.unit} /Session"
                 } else {
-                    weeklyHolder.goalView.text = "kein Session Ziel"
+                    "kein Session Ziel"
                 }
-                weeklyHolder.progressView.text = "Progress: " + currentCard.progress.toString() +
-                        "\n" + "Priorität: " + currentCard.priority.toString()
+
+                weeklyHolder.titleView.text = currentCard.name
+                weeklyHolder.goalView.text = specificGoalText
+                weeklyHolder.progressView.text = progressText
                 weeklyHolder.buttonView.setOnClickListener{
-                    Log.i("test", "card with id:${currentCard.id} and type:${currentCard.type}")
+                    //Dialog aufmachen und Click-Listner hinzufügen
+                    MaterialAlertDialogBuilder(parentView.context)
+                        .setTitle(currentCard.name)
+                        .setNegativeButton("Abbrechen") { dialog, which ->
+                        }
+                        .setPositiveButton("Machen") {dialog, which ->
+                            (parentView.context as CardDialogListner).onAcceptedActivity(currentCard.type, currentCard.id)
+                        }
+                        .show()
+                }
+            }
+            TYPE_CHALLENGE -> {
+                //TODO Text durch Graphic ersetzten
+                val currentCard: Challenge = list[position] as Challenge
+                val challengeHolder = holder as ChallengeViewHolder
+
+                val progressText = "Progress: " + currentCard.getProgress().toString() +
+                        "\n" + "Priorität: " + currentCard.getPriority().toString()
+                val specificGoalText = "${currentCard.goal.toString()}${currentCard.unit} /Woche"
+
+                challengeHolder.titleView.text = currentCard.name
+                challengeHolder.goalView.text = specificGoalText
+                challengeHolder.progressView.text = progressText
+                challengeHolder.buttonView.setOnClickListener{
+                    //Dialog aufmachen und Click-Listner hinzufügen
                     MaterialAlertDialogBuilder(parentView.context)
                         .setTitle(currentCard.name)
                         .setNegativeButton("Abbrechen") { dialog, which ->
@@ -91,30 +138,51 @@ class CardRecAdapter(private val list: List<Goal>): RecyclerView.Adapter<Recycle
         }
     }
 
+    /**
+     * Gibt den Typ für das Element an der position: position zurück
+     */
     override fun getItemViewType(position: Int): Int {
         return when(list[position]) {
             is Daily -> TYPE_DAILY
             is Weekly -> TYPE_WEEKLY
-            else -> 33
+            is Challenge -> TYPE_CHALLENGE
+            else -> 0
         }
     }
 
     override fun getItemCount() = list.size
 
+    /**
+     * Speichert gewünschte Views aus dem Layout in Variablen, die dann über DailyViewHolder.Variablename
+     * benutzt werden können
+     */
     class DailyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        var view: View = v
         var buttonView: Button = v.findViewById(R.id.card_rec_daily_do)
         var titleView: TextView = v.findViewById(R.id.card_rec_daily_title)
         var consequenceView: TextView = v.findViewById(R.id.card_rec_daily_consequence)
         var goalView: TextView = v.findViewById(R.id.card_rec_daily_goal)
     }
 
+    /**
+     * Speichert gewünschte Views aus dem Layout in Variablen, die dann über WeeklyViewHolder.Variablename
+     * benutzt werden können
+     */
     class WeeklyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        var view: View = v
         var buttonView: Button = v.findViewById(R.id.card_rec_weekly_do)
         var titleView: TextView = v.findViewById(R.id.card_rec_weekly_title)
         var progressView: TextView = v.findViewById(R.id.card_rec_weekly_progress)
         var goalView: TextView = v.findViewById(R.id.card_rec_weekly_goal)
+    }
+
+    /**
+     * Speichert gewünschte Views aus dem Layout in Variablen, die dann über ChallengeViewHolder.Variablename
+     * benutzt werden können
+     */
+    class ChallengeViewHolder(v: View) : RecyclerView.ViewHolder(v) {
+        var buttonView: Button = v.findViewById(R.id.card_rec_challenge_do)
+        var titleView: TextView = v.findViewById(R.id.card_rec_challenge_title)
+        var progressView: TextView = v.findViewById(R.id.card_rec_challenge_progress)
+        var goalView: TextView = v.findViewById(R.id.card_rec_challenge_goal)
     }
 
 }

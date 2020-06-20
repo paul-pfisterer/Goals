@@ -8,12 +8,13 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 
 @Database(
-    entities = [Daily::class, Weekly::class, Progress::class],
-    version = 3
+    entities = [Daily::class, Weekly::class, Challenge::class, Progress::class],
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase(){
     abstract fun dailyGoals(): DailyGoalsDao
     abstract fun weeklyGoals(): WeeklyGoalsDao
+    abstract fun challengeGoals(): ChallengeGoalsDao
     abstract fun progress(): ProgressDao
 
     companion object {
