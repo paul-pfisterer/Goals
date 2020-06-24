@@ -206,7 +206,7 @@ class CardRecAdapter(private val list: List<Goal>): RecyclerView.Adapter<Recycle
     class DailyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var buttonView: Button = v.findViewById(R.id.card_rec_daily_do)
         var titleView: TextView = v.findViewById(R.id.card_rec_daily_title)
-        var consequenceView: TextView = v.findViewById(R.id.card_rec_daily_consequence)
+       // var consequenceView: TextView = v.findViewById(R.id.card_rec_daily_consequence)
         var goalView: TextView = v.findViewById(R.id.card_rec_daily_goal)
 
         var progressBar: ProgressBar = v.findViewById(R.id.card_rec_daily_progressBar)
@@ -220,7 +220,7 @@ class CardRecAdapter(private val list: List<Goal>): RecyclerView.Adapter<Recycle
     class WeeklyViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var buttonView: Button = v.findViewById(R.id.card_rec_weekly_do)
         var titleView: TextView = v.findViewById(R.id.card_rec_weekly_title)
-        var progressView: TextView = v.findViewById(R.id.card_rec_weekly_progress)
+       // var progressView: TextView = v.findViewById(R.id.card_rec_weekly_progress)
         var goalView: TextView = v.findViewById(R.id.card_rec_weekly_goal)
 
         var circleView: CircularProgressBar = v.findViewById(R.id.card_rec_weekly_circle)
@@ -234,7 +234,7 @@ class CardRecAdapter(private val list: List<Goal>): RecyclerView.Adapter<Recycle
     class ChallengeViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         var buttonView: Button = v.findViewById(R.id.card_rec_challenge_do)
         var titleView: TextView = v.findViewById(R.id.card_rec_challenge_title)
-        var progressView: TextView = v.findViewById(R.id.card_rec_challenge_progress)
+       // var progressView: TextView = v.findViewById(R.id.card_rec_challenge_progress)
         var goalView: TextView = v.findViewById(R.id.card_rec_challenge_goal)
 
         var circleView: CircularProgressBar = v.findViewById(R.id.card_rec_challenge_circle)
