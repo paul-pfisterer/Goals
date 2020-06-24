@@ -54,4 +54,11 @@ dependencies {
 
     //CardView
     implementation "androidx.cardview:cardview:1.0.0"
+
+    // circle progress bar
+    implementation 'com.mikhaellopez:circularprogressbar:3.0.3'
+
+    // bar chart
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+
 }
