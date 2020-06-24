@@ -137,7 +137,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         var yValueGroup1 = ArrayList<BarEntry>()
 
-        var operation = yValueGroup1
+       // var operation = yValueGroup1
 
         // draw the graph
         var barDataSet1: BarDataSet
@@ -146,6 +146,8 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         var start = 0
         var end = 6
 
+
+        /*
         // for every different thing
         for(j in 0 until challengeNames.size) {
 
@@ -189,11 +191,23 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 
         }
+        */
+
+        yValueGroup1.add(BarEntry(1f, floatArrayOf(5.toFloat())))
+        yValueGroup1.add(BarEntry(2f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(3f, floatArrayOf(15.toFloat())))
+        yValueGroup1.add(BarEntry(4f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(5f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(6f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(7f, floatArrayOf(0.toFloat())))
 
 
-        barDataSet1 = BarDataSet(operation, "Test")
 
-        barDataSet1.setColors(Color.RED)
+
+
+        barDataSet1 = BarDataSet(yValueGroup1, "Test")
+
+        barDataSet1.setColors(Color.CYAN)
 
         // barDataSet1.label = "2016"
         barDataSet1.setDrawIcons(false)
@@ -211,9 +225,10 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         legend.setDrawInside(false)
 
         var legenedEntries = arrayListOf<LegendEntry>()
+        legenedEntries.add(LegendEntry("Laufen", Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
 
 
-
+        /*
         // legend for different color per goal
         if(!challengeNames.isEmpty()){
 
@@ -238,6 +253,8 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
             }
         }
+
+         */
 
         legend.setCustom(legenedEntries)
         legend.setYOffset(5f)
@@ -299,6 +316,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         var start = 0
         var end = 6
 
+        /*
         // for every different thing
         for(j in 0 until weekNames.size) {
 
@@ -344,11 +362,22 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         }
 
+         */
+
+
+        yValueGroup1.add(BarEntry(1f, floatArrayOf(30.toFloat())))
+        yValueGroup1.add(BarEntry(2f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(3f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(4f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(5f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(6f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(7f, floatArrayOf(0.toFloat())))
+
 
         barDataSet1 = BarDataSet(operation, "Test")
         //barDataSet1 = BarDataSet(yValueGroup1, "Test")
 
-        barDataSet1.setColors(Color.BLUE, Color.RED)
+        barDataSet1.setColors(Color.CYAN, Color.RED)
 
         // barDataSet1.label = "2016"
         barDataSet1.setDrawIcons(false)
@@ -367,8 +396,10 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         var legenedEntries = arrayListOf<LegendEntry>()
 
+        legenedEntries.add(LegendEntry("Trainieren", Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
 
 
+        /*
         // legend for different color per goal
         if(!weekNames.isEmpty()){
 
@@ -393,6 +424,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
             }
         }
+        */
 
         legend.setCustom(legenedEntries)
         legend.setYOffset(5f)
@@ -455,6 +487,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         var end = 6
 
 
+        /*
         for(j in 0 until dayNames.size){
 
              dailyList = arrayListOf(0 until dayNames.size)
@@ -466,6 +499,9 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         }
 
+         */
+
+/*
         // for every different thing
         for(j in 0 until dayNames.size) {
 
@@ -548,6 +584,15 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 
         }
+        */
+
+        yValueGroup1.add(BarEntry(1f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(2f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(3f, floatArrayOf(15.toFloat())))
+        yValueGroup1.add(BarEntry(4f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(5f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(6f, floatArrayOf(0.toFloat())))
+        yValueGroup1.add(BarEntry(7f, floatArrayOf(0.toFloat())))
 
         // draw the graph
         var barDataSet1: BarDataSet
@@ -560,8 +605,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         barDataSet2.setDrawIcons(false)
         barDataSet2.setDrawValues(false)
 
-
-       // barDataSet1.setColors(Color.BLUE, Color.RED)
+        barDataSet1.setColors(Color.CYAN, Color.RED)
 
         // barDataSet1.label = "2016"
         barDataSet1.setDrawIcons(false)
@@ -583,8 +627,10 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         var legenedEntries = arrayListOf<LegendEntry>()
 
+        legenedEntries.add(LegendEntry("Yoga", Legend.LegendForm.SQUARE, 15f, 15f, null, Color.CYAN))
 
 
+        /*
         // legend for different color per goal
         if(!dayNames.isEmpty()){
 
@@ -609,6 +655,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
             }
         }
+        */
 
         legend.setCustom(legenedEntries)
         legend.setYOffset(5f)
