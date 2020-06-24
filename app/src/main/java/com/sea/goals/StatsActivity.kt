@@ -24,7 +24,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 
-class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
     private lateinit var drawer: DrawerLayout
     private lateinit var db: AppDatabase
     private var dayNames = ArrayList<String>()
@@ -33,7 +33,7 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_stats)
-
+        db = AppDatabase.getDatabase(this)
         //Set ActionBar, Enable toggle Navigation Drawer, Add Navigation Listener
         setSupportActionBar(toolbar as Toolbar?)
         (toolbar as Toolbar?)?.title = "Today"
@@ -46,120 +46,33 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         toggle.syncState()
 
         //Setup Database
-        db = AppDatabase.getDatabase(this)
         CoroutineScope(IO).launch {
-            var data = ""
-
             val dailyGoals: List<Daily> = db.dailyGoals().getAll()
-            dailyGoals.forEach {
-                data += "${it.name}/${it.id} --> Mo: ${it.monday}, Di: ${it.tuesday}, Mi: ${it.wednesday}, DO: ${it.thursday}," +
-                        "Fr: ${it.friday}, Sa: ${it.saturday}, So: ${it.sunday} " +
-                        "today: ${it.today} \n" +
-                        "priority: ${it.getPriority()} " +
-                        "perseverance: ${it.getPeserverance()}" +
-                        "\n\n"
-
-                // add name to array, and weekdays
-                dayNames.add(it.name)
-                dayDone.add(it.monday)
-                dayDone.add(it.tuesday)
-                dayDone.add(it.wednesday)
-                dayDone.add(it.thursday)
-                dayDone.add(it.friday)
-                dayDone.add(it.saturday)
-                dayDone.add(it.sunday)
-
-
-                CoroutineScope(Main).launch {
-                }
-
-
-            }
-            val weeklyGoals: List<Weekly> = db.weeklyGoals().getAll()
-            weeklyGoals.forEach {
-                data += "${it.name}/${it.id} --> Mo: ${it.monday}, Di: ${it.tuesday}, Mi: ${it.wednesday}, DO: ${it.thursday}," +
-                        "Fr: ${it.friday}, Sa: ${it.saturday}, So: ${it.sunday} " +
-                        "today: ${it.today} \n" +
-                        "priority: ${it.getPriority()}" +
-                        "\n\n"
-            }
-            val progress: List<Progress> = db.progress().getAll()
-            progress.forEach {
-                data += "id${it.goal_id}type${it.type} --> Pr: ${it.progress}, on ${it.date}" +
-                        "\n"
-            }
             CoroutineScope(Main).launch {
-              // dataText.text = data
-                dataText.text = dayDone.toString()
-                populateGraphData()
-
-            }
-
-            var last = db.dailyGoals().getAllToday().lastIndex
-            var nameList = ArrayList<String>()
-
-
-            for(i in 0..last){
-                 nameList.add(i, db.dailyGoals().getAllToday().get(i).name)
-                db.dailyGoals().getAllToday().get(i).monday
-             }
-
-        }
-
-
-        // count different goals
-        var goals = ArrayList<String>()
-
-
-
-        resetTodayButton.setOnClickListener {
-            CoroutineScope(IO).launch {
-                db.dailyGoals().resetToday()
-                db.weeklyGoals().resetToday()
+                finishedLoading(dailyGoals)
             }
         }
-
-        resetProgress.setOnClickListener {
-            CoroutineScope(IO).launch {
-                db.progress().removeAll()
-            }
-        }
-
-        // show statistic
-
-       //setBarChart()
-
     }
 
-    @Override
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val intent: Intent
-        when(item.itemId) {
-            R.id.recs -> {
-                intent = Intent(this, RecommendationActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.createGoal -> {
-                intent = Intent(this, CreateGoalActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.today -> {
-                intent = Intent(this, TodayActivity::class.java)
-                startActivity(intent)
-            }
+    fun finishedLoading(dailyGoals: List<Daily>) {
+        var dailyGoalsTest = dailyGoals
+        dailyGoals.forEach {
+            dayNames.add(it.name)
+            dayDone.add(it.monday)
+            dayDone.add(it.tuesday)
+            dayDone.add(it.wednesday)
+            dayDone.add(it.thursday)
+            dayDone.add(it.friday)
+            dayDone.add(it.saturday)
+            dayDone.add(it.sunday)
         }
-        return true;
+        populateGraphData()
     }
-
-
-
-
 
     // statistic
     fun populateGraphData() {
 
         var barChartView = findViewById<BarChart>(R.id.chartData)
-
         val barWidth: Float
         val barSpace: Float
         val groupSpace: Float
@@ -216,12 +129,6 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
             }
         }
 
-
-
-
-
-
-
         /*
         yValueGroup1.add(BarEntry(1f, floatArrayOf(1.toFloat(), 3.toFloat())))
 
@@ -238,16 +145,6 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
         yValueGroup1.add(BarEntry(7f, floatArrayOf(5.toFloat(), 0.toFloat())))
 
          */
-
-
-
-
-
-
-
-
-
-
         barDataSet1 = BarDataSet(yValueGroup1, "Test")
         barDataSet1.setColors(Color.BLUE, Color.RED)
        // barDataSet1.label = "2016"
@@ -256,8 +153,6 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
         var barData = BarData(barDataSet1)
         barChartView.data = barData // set the data and list of lables into chart
-
-
 
         /*
         var barData = BarData(barDataSet1)
@@ -302,10 +197,9 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
 
         var x =dayNames.get(0)
-        var y =dayNames.get(1)
 
         legenedEntries.add(LegendEntry(x, Legend.LegendForm.SQUARE, 8f, 8f, null, Color.RED))
-        legenedEntries.add(LegendEntry(y, Legend.LegendForm.SQUARE, 8f, 8f, null, Color.BLUE))
+        //legenedEntries.add(LegendEntry(y, Legend.LegendForm.SQUARE, 8f, 8f, null, Color.BLUE))
 
 
         legend.setCustom(legenedEntries)
@@ -361,6 +255,24 @@ class StatsActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelect
 
     }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        var intent: Intent
+        when(item.itemId) {
+            R.id.createGoal -> {
+                intent = Intent(this, CreateGoalActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.today -> {
+                intent = Intent(this, TodayActivity::class.java)
+                startActivity(intent)
+            }
+            R.id.stats -> {
+                intent = Intent(this, StatsActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return true;
+    }
 
 
 }
